@@ -6,7 +6,7 @@ provider "aws" {
   secret_key = var.aws_secret_access_key
 }
 
-resource "aws_vpc" "test" {
+resource "aws_vpc" "test-vpc" {
   cidr_block = "10.1.0.0/16"
 
   tags = {
@@ -18,7 +18,7 @@ resource "aws_vpc" "test" {
 #Test Subnet
 
 resource "aws_subnet" "test-public" {
-  vpc_id = aws_vpc.test.id
+  vpc_id = aws_vpc.test-vpc.id
   cidr_block = "10.1.4.0/24"
   map_public_ip_on_launch = false
 
@@ -27,8 +27,8 @@ resource "aws_subnet" "test-public" {
   }
 }
 
-resource "aws_subnet" "private" {
-  vpc_id = aws_vpc.test.id
+resource "aws_subnet" "test-private" {
+  vpc_id = aws_vpc.test-vpc.id
   cidr_block = "10.1.2.0/24"
   map_public_ip_on_launch = false
 
@@ -41,7 +41,7 @@ resource "aws_subnet" "private" {
 # Test Internet Gateway
 
 resource "aws_internet_gateway" "test-igw" {
-  vpc_id = aws_vpc.test.id
+  vpc_id = aws_vpc.test-vpc.id
 
   tags = {
     Name = "test igw"
@@ -71,7 +71,7 @@ resource "aws_nat_gateway" "test-nat" {
 # Test Route tables
 
 resource "aws_route_table" "test-public-rtb" {
-  vpc_id = aws_vpc.test.id
+  vpc_id = aws_vpc.test-vpc.id
   route {
         cidr_block = "0.0.0.0/0"
         gateway_id = aws_internet_gateway.test-igw.id
@@ -82,8 +82,95 @@ resource "aws_route_table" "test-public-rtb" {
 }
 
 resource "aws_default_route_table" "test-private-rtb" {
-  default_route_table_id = aws_vpc.test.default_route_table_id
+  default_route_table_id = aws_vpc.test-vpc.default_route_table_id
   tags = {
     Name = "private rtb test"
   }
 }
+
+# Subnet Associations
+
+resource "aws_route_table_association" "public_assoc" {
+  subnet_id = "${aws_subnet.test-public.id}"
+  route_table_id = "${aws_route_table.test-public-rtb.id}"
+}
+
+resource "aws_route_table_association" "private_assoc" {
+  subnet_id = "${aws_subnet.test-private.id}"
+  route_table_id = "${aws_route_table.test-private-rtb.id}"
+}
+
+#Security groups
+#Public
+resource "aws_security_group" "test-public-sg" {
+  name = "sg_public"
+  description = "test security group for public instance"
+  vpc_id = "${aws_vpc.test-vpc.id}"
+
+  #SSH
+  ingress {
+    from_port 	= 22
+    to_port 	= 22
+    protocol 	= "tcp"
+    cidr_blocks = ["${var.localip}"]
+  }
+
+###DB
+###Uncheck if you will be using a regular EC2 Instance for DB rather than RDS
+#  ingress {
+#    from_port 	= 3306
+#    to_port 	= 3306
+#    protocol 	= "tcp"
+#    cidr_blocks = ["${var.localip}"]
+#  }
+
+  #HTTP
+  ingress {
+    from_port 	= 80
+    to_port 	= 80
+    protocol 	= "tcp"
+    cidr_blocks	= ["0.0.0.0/0"]
+  }
+
+  #Outbound internet access
+  egress {
+    from_port	= 0
+    to_port 	= 0
+    protocol	= "-1"
+    cidr_blocks	= ["0.0.0.0/0"]
+  }
+}
+
+#Private
+resource "aws_security_group" "test-private-sg" {
+  name        = "sg_private"
+  description = "Used for private instances"
+  vpc_id      = "${aws_vpc.test-vpc.id}"
+
+#Access from other security groups
+  ingress {
+    from_port    = 0
+    to_port      = 0
+    protocol     = "-1"
+    cidr_blocks  = ["10.1.0.0/16"]
+  }
+
+  egress {
+    from_port    = 0
+    to_port      = 0
+    protocol     = "-1"
+    cidr_blocks  = ["0.0.0.0/0"]
+  }
+}
+
+# SQL access from public/private security group
+
+ingress {
+    from_port        = 3306
+    to_port          = 3306
+    protocol         = "tcp"
+    security_groups  = ["${aws_security_group.test-public-sg.id}", "${aws_security_group.test-private-sg.id}"]
+  }
+}
+
+#COMPUTE

@@ -8,7 +8,7 @@ data "aws_availability_zones" "available" {}
 
 
 
-#IAM 
+#IAM
 
 #S3_access
 
@@ -219,7 +219,7 @@ resource "aws_security_group" "public" {
   description = "Used for public and private instances for load balancer access"
   vpc_id = "${aws_vpc.vpc.id}"
 
-  #SSH 
+  #SSH
 
   ingress {
     from_port 	= 22
@@ -228,7 +228,7 @@ resource "aws_security_group" "public" {
     cidr_blocks = ["${var.localip}"]
   }
 
-  #HTTP 
+  #HTTP
 
   ingress {
     from_port 	= 80
@@ -253,7 +253,7 @@ resource "aws_security_group" "private" {
   name        = "sg_private"
   description = "Used for private instances"
   vpc_id      = "${aws_vpc.vpc.id}"
-  
+
 
 # Access from other security groups
 
@@ -279,7 +279,7 @@ resource "aws_security_group" "RDS" {
   vpc_id      = "${aws_vpc.vpc.id}"
 
 # SQL access from public/private security group
-  
+
 ingress {
     from_port        = 3306
     to_port          = 3306
@@ -336,15 +336,15 @@ resource "aws_instance" "dev" {
   vpc_security_group_ids = ["${aws_security_group.public.id}"]
   iam_instance_profile = "${aws_iam_instance_profile.s3_access.id}"
   subnet_id = "${aws_subnet.public.id}"
-    
-  
+
+
   provisioner "local-exec" {
       command = <<EOD
-cat <<EOF > aws_hosts 
-[dev] 
-${aws_instance.dev.public_ip} 
-[dev:vars] 
-s3code=${aws_s3_bucket.code.bucket} 
+cat <<EOF > aws_hosts
+[dev]
+${aws_instance.dev.public_ip}
+[dev:vars]
+s3code=${aws_s3_bucket.code.bucket}
 EOF
 EOD
   }
@@ -388,7 +388,7 @@ resource "aws_elb" "prod" {
 
 
 
-#AMI 
+#AMI
 
 resource "random_id" "ami" {
   byte_length = 8
@@ -425,7 +425,7 @@ resource "aws_launch_configuration" "lc" {
   }
 }
 
-#ASG 
+#ASG
 
 resource "random_id" "asg" {
  byte_length = 8
@@ -434,7 +434,7 @@ resource "random_id" "asg" {
 
 resource "aws_autoscaling_group" "asg" {
   availability_zones = ["${var.aws_region}a", "${var.aws_region}c"]
-  name = "asg-${aws_launch_configuration.lc.id}" 
+  name = "asg-${aws_launch_configuration.lc.id}"
   max_size = "${var.asg_max}"
   min_size = "${var.asg_min}"
   health_check_grace_period = "${var.asg_grace}"
@@ -444,7 +444,7 @@ resource "aws_autoscaling_group" "asg" {
   load_balancers = ["${aws_elb.prod.id}"]
   vpc_zone_identifier = ["${aws_subnet.private1.id}", "${aws_subnet.private2.id}"]
   launch_configuration = "${aws_launch_configuration.lc.name}"
-    
+
   tag {
     key = "Name"
     value = "asg-instance"
@@ -468,7 +468,7 @@ resource "aws_route53_zone" "primary" {
 
 
 
-#www 
+#www
 
 resource "aws_route53_record" "www" {
   zone_id = "${aws_route53_zone.primary.zone_id}"
@@ -482,7 +482,7 @@ resource "aws_route53_record" "www" {
   }
 }
 
-#dev 
+#dev
 
 resource "aws_route53_record" "dev" {
   zone_id = "${aws_route53_zone.primary.zone_id}"
@@ -495,7 +495,7 @@ resource "aws_route53_record" "dev" {
 
 
 
-#db 
+#db
 
 resource "aws_route53_record" "db" {
   zone_id = "${aws_route53_zone.primary.zone_id}"
@@ -504,30 +504,3 @@ resource "aws_route53_record" "db" {
   ttl = "300"
   records = ["${aws_db_instance.db.address}"]
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
