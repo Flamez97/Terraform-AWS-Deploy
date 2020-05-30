@@ -16,7 +16,7 @@ resource "aws_vpc" "test-vpc" {
 
 
 #Test Subnet
-
+##Subnets
 resource "aws_subnet" "test-public" {
   vpc_id = aws_vpc.test-vpc.id
   cidr_block = "10.1.4.0/24"
@@ -34,6 +34,39 @@ resource "aws_subnet" "test-private" {
 
   tags = {
     Name = "test private"
+  }
+}
+
+##RDS Subnets
+resource "aws_subnet" "test-rds" {
+  vpc_id = "${aws_vpc.vpc.id}"
+  cidr_block = "10.1.5.0/24"
+  map_public_ip_on_launch = false
+#  availability_zone = "${data.aws_availability_zones.available.names[0]}"
+
+  tags {
+    Name = "test rds"
+  }
+}
+
+resource "aws_subnet" "test-rds2" {
+  vpc_id = "${aws_vpc.vpc.id}"
+  cidr_block = "10.1.5.0/24"
+  map_public_ip_on_launch = false
+#  availability_zone = "${data.aws_availability_zones.available.names[1]}"
+
+  tags {
+    Name = "test rds2"
+  }
+}
+
+##Subnet Group
+resource "aws_db_subnet_group" "test-rds-sng" {
+  name = "rds_subnetgroup"
+  subnet_ids = ["${aws_subnet.test-rds.id}", ${aws_subnet.test-rds2.id}"]
+
+  tags {
+    Name = "test_rds_sng"
   }
 }
 
@@ -218,6 +251,6 @@ resource "aws_db_instance" "test-db" {
   name                  = "var.dbname"
   username              = "var.dbuser"
   password              = "var.dbpassword"
-  db_submet_group_name  = "aws_db_subnet_group.rds_subnetgroup.(name)"
+  db_submet_group_name  = "aws_db_subnet_group.test-rds-sng.id"
   vpc_security_group_ids = "aws_security_group.test-rds-sg.id"
 }
