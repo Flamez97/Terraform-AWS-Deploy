@@ -1,0 +1,79 @@
+version: 2.1
+
+orbs:
+  slack: circleci/slack@3.4.2
+  terraform: circleci/terraform@1.1.0
+
+jobs:
+  format:
+    working_directory: /tmp/project
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - checkout
+
+      - run:
+          name: terraform fmt
+          command: |
+            terraform fmt -recursive=true -check=true
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  validate:
+    working_directory: /tmp/project
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - run:
+          name: terraform validate
+          command: |
+            terraform validate
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  init:
+    working_directory: /tmp/project
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - run:
+          name: terraform init
+          command: |
+            terraform init -backend=false
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  plan:
+    working_directory: /tmp/project
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - run:
+          name: terraform plan
+          command: |
+            terraform plan -out moduletest
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+workflows:
+  version: 2
+  format_validate_init-plan:
+    jobs:
+      - format
+      - init:
+          requires:
+            - format
+      - validate:
+          requires:
+            - init
+      - plan:
+          requires:
+            - validate
