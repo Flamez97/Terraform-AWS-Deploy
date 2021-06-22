@@ -14,7 +14,7 @@ jobs:
       - run:
           name: terraform fmt
           command: |
-            terraform fmt -recursive=true -check=true
+            terraform fmt -recursive=true
       - persist_to_workspace:
           root: .
           paths:
