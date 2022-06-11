@@ -2,8 +2,8 @@
 
 provider "aws" {
   region     = var.aws_region
-  access_key = var.aws_access_key_id
-  secret_key = var.aws_secret_access_key
+#  access_key = var.aws_access_key_id
+#  secret_key = var.aws_secret_access_key
 }
 
 resource "aws_vpc" "test-vpc" {
@@ -20,10 +20,22 @@ resource "aws_vpc" "test-vpc" {
 resource "aws_subnet" "test-public" {
   vpc_id = aws_vpc.test-vpc.id
   cidr_block = "10.1.4.0/24"
-  map_public_ip_on_launch = false
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "test public"
+  }
+}
+
+#Test Subnet
+##Subnets
+resource "aws_subnet" "test-public2" {
+  vpc_id = aws_vpc.test-vpc.id
+  cidr_block = "10.1.8.0/24"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "test public2"
   }
 }
 
@@ -51,7 +63,7 @@ resource "aws_subnet" "test-rds" {
 
 resource "aws_subnet" "test-rds2" {
   vpc_id = "${aws_vpc.vpc.id}"
-  cidr_block = "10.1.5.0/24"
+  cidr_block = "10.1.7.0/24"
   map_public_ip_on_launch = false
 #  availability_zone = "${data.aws_availability_zones.available.names[1]}"
 
