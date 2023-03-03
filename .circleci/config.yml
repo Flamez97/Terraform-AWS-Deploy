@@ -15,10 +15,6 @@ jobs:
           name: terraform fmt
           command: |
             terraform fmt -check=true
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
 
   validate:
     working_directory: /tmp/project
@@ -29,10 +25,6 @@ jobs:
           name: terraform validate
           command: |
             terraform validate
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
 
   init:
     working_directory: /tmp/project
@@ -43,10 +35,6 @@ jobs:
           name: terraform init
           command: |
             terraform init -backend=false
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
 
   plan:
     working_directory: /tmp/project
@@ -57,10 +45,6 @@ jobs:
           name: terraform plan
           command: |
             terraform plan -out moduletest
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
 
 workflows:
   version: 2
