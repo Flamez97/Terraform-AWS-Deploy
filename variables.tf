@@ -1,9 +1,12 @@
-#----Variable VPC----
+variable "sg_test" {
+  description = "Security Group Name"
+  type        = string
+  default     = ""
+}
 
-variable  "aws_region" {}
-variable "project_name" {}
-variable "aws_access_key_id" {}
-variable "aws_secret_access_key" {}
-variable "dbname" {}
-variable "dbuser" {}
-variable "dbpassword" {}
+
+#variable "vpc_id" {}
+
+#data "aws_vpc" "selected" {
+#  id = var.vpc_id
+#}
