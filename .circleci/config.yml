@@ -1,7 +1,8 @@
 version: 2.1
 
 before_script:
-  - cd $TF_ROOT
+  - mkdir /tmp/project/terraform
+  - cd /tmp/project/terraform
 
 orbs:
   terraform: circleci/terraform@1.1.0
@@ -21,7 +22,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - $TF_ROOT
+            - /tmp/project/terraforms
 
   validate:
     working_directory: /tmp/project
