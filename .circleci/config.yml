@@ -1,5 +1,8 @@
 version: 2.1
 
+before_script:
+  - cd $TF_ROOT
+
 orbs:
   terraform: circleci/terraform@1.1.0
 
@@ -18,7 +21,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - .
+            - $TF_ROOT
 
   validate:
     working_directory: /tmp/project
@@ -32,7 +35,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - .
+            - $TF_ROOT
 
   init:
     working_directory: /tmp/project
@@ -46,7 +49,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - .
+            - $TF_ROOT
 
   plan:
     working_directory: /tmp/project
@@ -60,7 +63,8 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - .
+            - moduletest
+            - $TF_ROOT
 
 workflows:
   version: 2
