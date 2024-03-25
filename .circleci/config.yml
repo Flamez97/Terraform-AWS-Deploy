@@ -42,9 +42,9 @@ jobs:
       - run:
           name: terraform init
           command: |
-            touch ./backend.hcl
-            terraform init -backend=true
-          backend_config_file: backend.hcl
+            echo $region
+            export $region
+            terraform init -backend=false
       - persist_to_workspace:
           root: .
           paths:
