@@ -51,9 +51,9 @@ jobs:
 
 workflows:
   version: 2
-  format_validate_init-plan:
+  Run-Terraform-Tasks:
     jobs:
       - format
-      - init:
+      - init_and_plan:
           requires:
             - format
