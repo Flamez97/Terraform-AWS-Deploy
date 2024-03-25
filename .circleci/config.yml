@@ -39,14 +39,13 @@ jobs:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
     steps:
-      - run: echo $region
-
       - run:
           name: terraform init
           command: |
             echo $region
             export $region
             terraform init -backend=false
+            terraform plan
       - persist_to_workspace:
           root: .
           paths:
@@ -80,4 +79,4 @@ workflows:
             - validate
       - plan:
           requires:
-            - validate
+            - init
