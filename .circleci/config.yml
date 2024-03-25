@@ -43,7 +43,6 @@ jobs:
           name: terraform init
           command: |
             touch ./backend.hcl
-            cd ./backend.hcl
             terraform init -backend=true
           backend_config_file: backend.hcl
       - persist_to_workspace:
