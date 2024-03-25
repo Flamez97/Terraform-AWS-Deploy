@@ -72,12 +72,12 @@ workflows:
   format_validate_init-plan:
     jobs:
       - format
-      - init:
-          requires:
-            - format
       - validate:
           requires:
-            - init
+            - format
+      - init:
+          requires:
+            - validate
       - plan:
           requires:
             - validate
