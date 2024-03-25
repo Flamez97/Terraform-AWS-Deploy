@@ -48,6 +48,7 @@ jobs:
           command: |
             echo $region
             terraform init -backend=false
+            terraform validate
       - persist_to_workspace:
           root: .
           paths:
