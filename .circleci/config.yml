@@ -47,8 +47,6 @@ jobs:
           name: terraform init
           command: |
             echo $region
-            export $region
-            touch .terraformrc
             terraform init -backend=false
       - persist_to_workspace:
           root: .
