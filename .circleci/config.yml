@@ -32,6 +32,9 @@ jobs:
           command: |
             echo $region
             terraform init -backend=false
+      - run:
+          name: terraform validate
+          command: |
             terraform validate
       - persist_to_workspace:
           root: .
@@ -63,9 +66,6 @@ workflows:
       - init:
           requires:
             - format
-      - validate:
-          requires:
-            - init
       - plan:
           requires:
             - validate
