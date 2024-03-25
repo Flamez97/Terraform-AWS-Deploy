@@ -42,6 +42,7 @@ jobs:
       - run:
           name: terraform plan
           command: |
+            echo $region
             terraform plan -out moduletest
 
       - persist_to_workspace:
