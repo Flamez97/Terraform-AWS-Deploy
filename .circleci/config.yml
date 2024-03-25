@@ -50,7 +50,6 @@ jobs:
             export $region
             touch .terraformrc
             terraform init -backend=false
-            terraform plan
       - persist_to_workspace:
           root: .
           paths:
@@ -61,6 +60,8 @@ jobs:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
     steps:
+      - checkout
+
       - run:
           name: terraform plan
           command: |
@@ -76,12 +77,12 @@ workflows:
   format_validate_init-plan:
     jobs:
       - format
-      - validate:
-          requires:
-            - format
       - init:
           requires:
-            - validate
+            - format
+      - validate:
+          requires:
+            - init
       - plan:
           requires:
             - init
