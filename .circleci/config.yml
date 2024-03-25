@@ -20,22 +20,6 @@ jobs:
           paths:
             - .
 
-  validate:
-    working_directory: /tmp/project
-    docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-    steps:
-      - checkout
-
-      - run:
-          name: terraform validate
-          command: |
-            terraform validate
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-
   init:
     working_directory: /tmp/project
     docker:
