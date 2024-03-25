@@ -5,7 +5,7 @@ orbs:
 
 jobs:
   format:
-    working_directory: /tmp/project
+    working_directory: ./tmp/project
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
     steps:
@@ -17,7 +17,8 @@ jobs:
             terraform fmt -check=true
       - persist_to_workspace:
           root: .
-
+          paths:
+            - ./tmp/project
 
   validate:
     working_directory: /tmp/project
