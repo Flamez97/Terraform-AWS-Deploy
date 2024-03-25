@@ -3,11 +3,6 @@ version: 2.1
 orbs:
   terraform: circleci/terraform@1.1.0
 
-before_scripts:
-  - mkdir ./tmp/project
-  - cd ./tmp/project
-  - git init
-
 jobs:
   format:
     working_directory: /tmp/project
@@ -47,6 +42,8 @@ jobs:
       - run:
           name: terraform init
           command: |
+            touch ./backend.hcl
+            cd ./backend.hcl
             terraform init -backend=true
           backend_config_file: backend.hcl
       - persist_to_workspace:
