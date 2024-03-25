@@ -15,12 +15,13 @@ jobs:
           name: terraform fmt
           command: |
             terraform fmt -check=true
+
       - persist_to_workspace:
           root: .
           paths:
             - .
 
-  init:
+  init_and_plan:
     working_directory: /tmp/project
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
@@ -32,30 +33,20 @@ jobs:
           command: |
             echo $region
             terraform init -backend=false
+
       - run:
           name: terraform validate
           command: |
             terraform validate
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-
-  plan:
-    working_directory: /tmp/project
-    docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-    steps:
-      - checkout
 
       - run:
           name: terraform plan
           command: |
             terraform plan -out moduletest
+
       - persist_to_workspace:
           root: .
           paths:
-            - moduletest
             - .
 
 workflows:
@@ -66,6 +57,3 @@ workflows:
       - init:
           requires:
             - format
-      - plan:
-          requires:
-            - init
