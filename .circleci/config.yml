@@ -17,8 +17,8 @@ jobs:
             terraform fmt -check=true
       - persist_to_workspace:
           root: .
-          paths:
-            - /tmp/project
+#          paths:
+#            - /tmp/project
 
   validate:
     working_directory: /tmp/project
