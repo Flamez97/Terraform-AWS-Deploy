@@ -44,6 +44,7 @@ jobs:
           command: |
             echo $region
             export $region
+            touch .terraformrc
             terraform init -backend=false
             terraform plan
       - persist_to_workspace:
