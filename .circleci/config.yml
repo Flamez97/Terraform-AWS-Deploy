@@ -6,10 +6,11 @@ orbs:
 before_scripts:
   - mkdir ./tmp/project
   - cd ./tmp/project
+  - git init
 
 jobs:
   format:
-    working_directory: .
+    working_directory: ./tmp/project
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
     steps:
@@ -20,9 +21,9 @@ jobs:
           command: |
             terraform fmt -check=true
       - persist_to_workspace:
-          root: .
+          root: ./tmp/project
           paths:
-            - .
+            - ./tmp/project
 
   validate:
     working_directory: /tmp/project
