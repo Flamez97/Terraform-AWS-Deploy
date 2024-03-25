@@ -23,7 +23,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - /tmp/project
+            - .
 
   validate:
     working_directory: /tmp/project
@@ -37,7 +37,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - $TF_ROOT
+            - .
 
   init:
     working_directory: /tmp/project
@@ -47,11 +47,12 @@ jobs:
       - run:
           name: terraform init
           command: |
-            terraform init -backend=false
+            terraform init -backend=true
+          backend_config_file: backend.hcl
       - persist_to_workspace:
           root: .
           paths:
-            - $TF_ROOT
+            - .
 
   plan:
     working_directory: /tmp/project
@@ -66,7 +67,7 @@ jobs:
           root: .
           paths:
             - moduletest
-            - $TF_ROOT
+            - .
 
 workflows:
   version: 2
