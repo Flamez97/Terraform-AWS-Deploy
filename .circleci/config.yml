@@ -37,19 +37,8 @@ jobs:
       - run:
           name: terraform validate
           command: |
-            terraform validate
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-
-
-      - run:
-          name: terraform plan
-          command: |
             echo $region
-            terraform plan -out moduletest
-
+            terraform validate
       - persist_to_workspace:
           root: .
           paths:
