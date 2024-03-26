@@ -38,6 +38,11 @@ jobs:
           name: terraform validate
           command: |
             terraform validate
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
 
       - run:
           name: terraform plan
